@@ -8,6 +8,7 @@ export class RouterUser {
     constructor(ModelUser:Model<t.User>){
         this.ModelUser = ModelUser;
         this.router = Router();
+        this.initialize();
     }
 
     private initialize = () => {
@@ -18,6 +19,40 @@ export class RouterUser {
             } catch (error) {
                 console.log({error})
             }
+        })
+        this.router.post('/acknowledge', async(req:Request, res:Response)=>{
+            const {body:{email}}:{body:{email:string}} = req; 
+            if(!email) return;
+            try {
+                // if user's phone details are received
+                console.log('acknowledging--------');
+                const found = await this.ModelUser.findOne({email}).lean();
+                if (found){
+                    console.log('found--------')
+                    console.log({found})
+                    res.status(200).send({
+                        msg:'exists',
+                        doc:found
+                    })
+                }else{
+                // if user's phone google auth is received
+                console.log('creating--------')
+                    const created = await this.ModelUser.create({email});
+                    if(created){
+                        res.status(200).send({
+                            msg:'created',
+                            doc:created
+                        })
+                    }else{
+                        res.status(200).send({
+                            msg:'failed'
+                        })
+                    }
+                }
+
+            } catch (error) {
+                console.log({error})
+            }            
         })
     }
 }

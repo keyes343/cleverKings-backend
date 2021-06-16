@@ -44,6 +44,9 @@ export class RouterRoom {
                      console.log({availability})
                      found.availability = !availability;
 
+                     if(availability){
+                         found.userEmail = ''
+                     }
                      await found.save();
                      res.status(200).send({
                         msg: availability?'deleted':'added',
@@ -88,7 +91,7 @@ export class RouterRoom {
             try {
                 const found = await this.ModelRoom.findOne({name});
                 if(found){
-                    const userExists = found.userEmails.includes(email);
+                    const userExists = found.userEmail === email;
                     res.status(200).send({
                         msg:'checked and returning value',
                         booked: userExists
@@ -104,7 +107,7 @@ export class RouterRoom {
             try {
                 const grabbed = await this.ModelRoom.findOne({name});
                 if(grabbed){
-                    grabbed.userEmails.push(email);
+                    grabbed.userEmail = email;
                     await grabbed.save();
                     res.status(200).send({
                         msg:'added',
@@ -122,8 +125,8 @@ export class RouterRoom {
             try {
                 const grabbed = await this.ModelRoom.findOne({name});
                 if(grabbed){
-                    const index = grabbed.userEmails.findIndex(em => em === email);
-                    grabbed.userEmails.splice(index,1);
+                   grabbed.userEmail = '';
+                   grabbed.availability = true;
                     await grabbed.save();
                     res.status(200).send({
                         msg:'deleted',
