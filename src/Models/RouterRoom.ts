@@ -85,7 +85,23 @@ export class RouterRoom {
              } catch (error) {
                  console.log({error})
              }
-        })
+        });
+        this.router.post('/delete-room',async(req:Request, res: Response)=>{
+            const {name}:{name:number}  = req.body;
+            try {
+                 const found = await this.ModelRoom.findOne({
+                    name
+                });
+                if(found){
+                    found.delete();    
+                    res.status(200).send({
+                        msg:'deleted'
+                    })
+                }
+             } catch (error) {
+                 console.log({error})
+             }
+        });
         this.router.post('/check-self-availability',async(req:Request, res: Response)=>{
             const {name,email}:{name:number,email:string} = req.body
             try {
